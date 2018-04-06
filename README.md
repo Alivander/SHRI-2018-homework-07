@@ -37,11 +37,19 @@
 Способ решения: грузить как можно большее количество ресурсов через протокол http/2
 
 7. Изображения, на которые приходиться 80% всего веса страницы, никак не оптимизируются. Используется gif-изображения весом 0,5-2 Мб. Преобладающий формат изображения - jpeg, не является самым легким.  
-Способ решения: использовать более экономичные по весу форматы. Например, webp, а jpeg оставить фолбеком для браузеров не поддерживающих этот формат, и минифицировать.
+Способ решения: использовать более экономичные по весу форматы. Например, webp, а jpeg оставить фолбеком для браузеров не поддерживающих этот формат. Средствами автоматизации очищать изображения от лишней встроенной информации и ужимать без потери качества.
 
 8. Для адаптации изображений используется связка из javascript и html. Пример кода html:
 ```
-<div data-src="https://cdn.lifehacker.ru/wp-content/uploads/2016/11/fitgirl_1479474339-1600x800.jpg" data-src-mobile="https://cdn.lifehacker.ru/wp-content/uploads/2016/11/fitgirl_1479474339-310x155.jpg" data-src-medium="https://cdn.lifehacker.ru/wp-content/uploads/2016/11/fitgirl_1479474339-630x315.jpg" data-src-ringo_800="https://cdn.lifehacker.ru/wp-content/uploads/2016/11/fitgirl_1479474339-800x400.jpg" data-src-ringo_1600="https://cdn.lifehacker.ru/wp-content/uploads/2016/11/fitgirl_1479474339-1600x800.jpg" style="background-image: url(&quot;https://cdn.lifehacker.ru/wp-content/uploads/2016/11/fitgirl_1479474339-630x315.jpg&quot;); opacity: 1;" class="stripe-item__img-background lazy-load"></div>
+<div data-src="https://cdn.lifehacker.ru/wp-content/uploads/2016/11/fitgirl_1479474339-1600x800.jpg"  
+data-src-mobile="https://cdn.lifehacker.ru/wp-content/uploads/2016/11/fitgirl_1479474339-310x155.jpg" 
+data-src-medium="https://cdn.lifehacker.ru/wp-content/uploads/2016/11/fitgirl_1479474339-630x315.jpg"  
+data-src-ringo_800="https://cdn.lifehacker.ru/wp-content/uploads/2016/11/fitgirl_1479474339-800x400.jpg"  
+data-src-ringo_1600="https://cdn.lifehacker.ru/wp-content/uploads/2016/11/fitgirl_1479474339-1600x800.jpg"  
+style="background-image:  
+url(&quot;https://cdn.lifehacker.ru/wp-content/uploads/2016/11/fitgirl_1479474339-630x315.jpg&quot;); 
+opacity: 1;"  
+class="stripe-item__img-background lazy-load"></div>
 ```
 Javascript парсит html, и устанавливает изображение, подходящего для текущего размера экрана, как фон для div. Это плохое решение. Оно требует скачивания и запуска скрипта и дополнительных операций для каждой картинки в любом браузере. При этом при ресайзе окна, новое подходящее изображение не подгружается. Не учитываются ретиновые экраны. Это все влияет не только на скорость загрузки страницы, но и на ее качество в целом.  
 Способ решения: использовать теги picture, source, img. Они позволят реализовать адаптивные изображения без js, а так же могут подстраиваться под изменение экрана и его разрешения. Также можно подключить полифил, который будет скачиваться только для браузеров, не поддерживающих picture, и не будет тормозить загрузку страницы во всех остальных.
@@ -57,5 +65,5 @@ Javascript парсит html, и устанавливает изображени
 Способ решения: чистка html (DevTools Audits - 2545 nodes, рекомендовано не более 1500), удаление лишнего взаимодействия с DOM из скриптов, в том числе отказ от использования document.write() (DevTools Audits).
 
 12. На сайте использованы иконочные шрифты iconmoon. Они также требуют времени на загрузку.  
-Способ решения: использовать svg-иконки.   
+Способ решения: использовать svg-иконки. Если их объединить в svg-спрайт, то достаточно будет 1го запроса для загрузки (это секономит время, затрачиваемое на установку соединения). Также это позволит сократить html.
 
